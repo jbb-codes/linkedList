@@ -9,7 +9,6 @@ class Node {
 class LinkedList {
   constructor(node) {
     this.head = node;
-    this.size = 0;
   }
 }
 
@@ -43,14 +42,39 @@ export class LinkedHashMap {
       this.buckets[index] = list;
     } else {
       let current = list.head;
+      let currentHash = this.hash(list.head.key);
+      // console.log(currentHash);
+      // if (currentHash === index) {
+      // }
 
       while (current.next) {
         current = current.next;
       }
       current.next = node;
     }
-    list.size++;
     this.size++;
+
+    if (this.size / this.capacity > this.loadFactor) {
+      this.resize(this.capacity * 2);
+    }
+  }
+
+  resize(newCapacity) {
+    const oldBuckets = this.buckets;
+    this.capacity = newCapacity;
+    this.buckets = new Array(newCapacity).fill(null);
+    this.size = 0;
+
+    for (const list of oldBuckets) {
+      if (list) {
+        let current = list.head;
+        this.set(current.key, current.value);
+        while (current.next) {
+          this.set(current.next.key, current.next.value);
+          current = current.next;
+        }
+      }
+    }
   }
 
   get(key) {
@@ -139,6 +163,10 @@ export class LinkedHashMap {
     return this.size;
   }
 
+  getCapacity() {
+    return this.capacity;
+  }
+
   clear() {
     this.buckets = new Array(this.capacity).fill(null);
     this.size = 0;
@@ -149,9 +177,11 @@ export class LinkedHashMap {
 
     for (const list of this.buckets) {
       if (list) {
-        allKeys.push(list.head.key);
-        while (list.next) {
-          allKeys.push(list.next.key);
+        let current = list.head;
+        allKeys.push(current.key);
+        while (current.next) {
+          allKeys.push(current.next.key);
+          current = current.next;
         }
       }
     }
@@ -163,9 +193,11 @@ export class LinkedHashMap {
 
     for (const list of this.buckets) {
       if (list) {
-        allValues.push(list.head.value);
-        while (list.next) {
-          allValues.push(list.next.value);
+        let current = list.head;
+        allValues.push(current.value);
+        while (current.next) {
+          allValues.push(current.next.value);
+          current = current.next;
         }
       }
     }
@@ -177,9 +209,11 @@ export class LinkedHashMap {
 
     for (const list of this.buckets) {
       if (list) {
-        allPairs.push([list.head.key, list.head.value]);
-        while (list.next) {
-          allPairs.push(list.next([list.next.key, list.next.value]));
+        let current = list.head;
+        allPairs.push([current.key, current.value]);
+        while (current.next) {
+          allPairs.push([current.next.key, current.next.value]);
+          current = current.next;
         }
       }
     }
