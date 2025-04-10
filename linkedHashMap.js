@@ -141,7 +141,6 @@ export class LinkedHashMap {
         current = current.next;
         this.buckets[index] = current;
       }
-      list.size--;
       this.size--;
       return true;
     }
@@ -151,7 +150,6 @@ export class LinkedHashMap {
       current = current.next;
       if (current.key === key) {
         previous.next = current.next;
-        list.size--;
         this.size--;
         return true;
       }
